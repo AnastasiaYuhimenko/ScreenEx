@@ -18,8 +18,8 @@ extension Color {
 
 struct AppColors {
 	let accentAppColor = Color("AccentColor")
-	let backgroundColor = Color("colorForBackground")
+	let backgroundColor = Color("backgroundColor")
 	let pricesDown = Color("colorForPricesDown")
 	let pricesUp = Color("colorForPricesUp")
-	let secodaryColor = Color("ColorForText")
+	let secondColor = Color("secondColor")
 }
