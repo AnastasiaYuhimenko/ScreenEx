@@ -8,7 +8,7 @@
 import Foundation
 
 
-struct ExchangeModel: Identifiable, Codable {
+struct ExchangeModel: Identifiable, Codable, Equatable {
 	let id, symbol, name: String?
 	let image: String?
 	let currentPrice, marketCap, marketCapRank, fullyDilutedValuation: Double?
@@ -64,6 +64,6 @@ struct ExchangeModel: Identifiable, Codable {
 	}
 }
 
-struct SparklineIn7D: Codable {
+struct SparklineIn7D: Codable, Equatable {
 	let price: [Double]?
 }

@@ -11,7 +11,7 @@ import SwiftUI
 struct CoinCell: View {
 	
 	let coin: ExchangeModel
-	
+	let showHoldings: Bool
 	var body: some View {
 		
 		HStack(spacing: 0) {
@@ -35,18 +35,20 @@ struct CoinCell: View {
 			
 	
 			// MARK: - Holding
-			VStack(alignment: .leading) {
-				Text(coin.currentHoldingsValue.formatCurrency6())
-					.fontWeight(.medium)
-				
-				HStack(spacing: 2) {
-					Text("count: ")
-						.foregroundStyle(Color.secondary)
-					Text("\((coin.currentHoldings ?? 0).convertNumberToString2())")
-				}
-			}
-			.frame(maxWidth: .infinity, alignment: .leading)
 			
+			if showHoldings {
+				VStack(alignment: .leading) {
+					Text(coin.currentHoldingsValue.formatCurrency6())
+						.fontWeight(.medium)
+					
+					HStack(spacing: 2) {
+						Text("count: ")
+							.foregroundStyle(Color.secondary)
+						Text("\((coin.currentHoldings ?? 0).convertNumberToString2())")
+					}
+				}
+				.frame(maxWidth: .infinity, alignment: .leading)
+			}
 			// MARK: - Price
 			VStack(alignment: .leading) {
 				Text("\((coin.currentPrice ?? 0).formatCurrency6())")
@@ -78,23 +80,24 @@ struct CoinCell: View {
 			List {
 				Section {
 					ForEach(0..<1) { idx in
-						CoinCell(coin: CoinPreviewModel.shared.coin)
+						CoinCell(coin: CoinPreviewModel.shared.coin, showHoldings: true)
+						
 					}
 					.onDelete{ index in
 						
 					}
 				} header: {
 					HStack(spacing: 0) {
-		 Text("Name")
-			 .frame(maxWidth: .infinity, alignment: .leading)
-		 Text("Holding")
-			 .frame(maxWidth: .infinity, alignment: .leading)
-		
-		 Text("Price")
-			 .frame(maxWidth: .infinity, alignment: .trailing)
-			 .padding(.trailing, 50)
-	 }
- }
+						Text("Name")
+							.frame(maxWidth: .infinity, alignment: .leading)
+						Text("Holding")
+							.frame(maxWidth: .infinity, alignment: .leading)
+						
+						Text("Price")
+							.frame(maxWidth: .infinity, alignment: .trailing)
+							.padding(.trailing, 50)
+					}
+				}
 				
 			}
 			

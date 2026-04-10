@@ -9,9 +9,18 @@ import SwiftUI
 
 @main
 struct ScreenExApp: App {
+	
+	@StateObject private var viewModel: BaseViewModel = BaseViewModel()
+	@StateObject private var searchViewModel: SearchViewModel = SearchViewModel(searchText: "")
+	
     var body: some Scene {
         WindowGroup {
-            ContentView()
+			NavigationView {
+				MainScreen()
+			}
+			.environmentObject(viewModel)
+			.environmentObject(searchViewModel)
         }
+		
     }
 }
