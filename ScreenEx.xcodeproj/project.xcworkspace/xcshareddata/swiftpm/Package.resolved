@@ -1,0 +1,15 @@
+{
+  "originHash" : "ccff69a3da350027b2ebbf1121a4074453dbedf8fcb72bea723d8884fa8ea999",
+  "pins" : [
+    {
+      "identity" : "statefultabview",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/NicholasBellucci/StatefulTabView",
+      "state" : {
+        "revision" : "9faa432592874b6e20065f2aa63f20f72c5df71c",
+        "version" : "0.1.10"
+      }
+    }
+  ],
+  "version" : 3
+}

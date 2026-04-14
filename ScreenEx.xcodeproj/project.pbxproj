@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5D7DFAED2F8CDF0E0098249F /* StatefulTabView in Frameworks */ = {isa = PBXBuildFile; productRef = 5D7DFAEC2F8CDF0E0098249F /* StatefulTabView */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		5D05A54B2F8113A400EDEC9C /* ScreenEx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenEx.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D7DFAED2F8CDF0E0098249F /* StatefulTabView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = ScreenEx;
 			packageProductDependencies = (
+				5D7DFAEC2F8CDF0E0098249F /* StatefulTabView */,
 			);
 			productName = ScreenEx;
 			productReference = 5D05A54B2F8113A400EDEC9C /* ScreenEx.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 5D05A5422F8113A400EDEC9C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5D7DFAEB2F8CDF0E0098249F /* XCRemoteSwiftPackageReference "StatefulTabView" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5D05A54C2F8113A400EDEC9C /* Products */;
 			projectDirPath = "";
@@ -342,6 +351,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5D7DFAEB2F8CDF0E0098249F /* XCRemoteSwiftPackageReference "StatefulTabView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/NicholasBellucci/StatefulTabView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.1.10;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5D7DFAEC2F8CDF0E0098249F /* StatefulTabView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D7DFAEB2F8CDF0E0098249F /* XCRemoteSwiftPackageReference "StatefulTabView" */;
+			productName = StatefulTabView;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5D05A5432F8113A400EDEC9C /* Project object */;
 }

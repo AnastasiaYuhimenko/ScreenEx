@@ -9,54 +9,69 @@ import SwiftUI
 
 struct MainScreen: View {
 	
-	@State var selectedTab: Int = 0
+	@State private var selectedTab: Int = 0
 	@EnvironmentObject private var viewModel: BaseViewModel
 	
-    var body: some View {
+	var body: some View {
 		ZStack {
 			Color.background
 				.ignoresSafeArea()
-			
-			TabView(selection: $selectedTab) {
-				Tab("Portfolio", systemImage: "basket", value: 0) {
-					Portfolio()
-						.gesture(swipeGesture(), including: .gesture)
-				}
-				
-				
-				Tab("Top", systemImage: "chart.line.uptrend.xyaxis", value: 1) {
-					TopCoinsScreen()
-						.gesture(swipeGesture(), including: .gesture)
-				}
+	
+				VStack(spacing: 0) {
+					TabView(selection: $selectedTab) {
+						Portfolio()
+							.simultaneousGesture(swipeGesture())
+							.tag(0)
+							.tabItem {
+								Label("Portfolio", systemImage: "basket")
+							}
+						TopCoinsScreen()
+							.simultaneousGesture(swipeGesture())
+							.tag(1)
+							.tabItem {
+								Label("Top", systemImage: "chart.line.uptrend.xyaxis")
+							}
+					}
+					
+					
 				
 			}
-		
-			
-			
 		}
-    }
-}
+	}
 
-#Preview {
-    MainScreen()
-		.environmentObject(BaseViewModel())
-		.environmentObject(SearchViewModel(searchText: ""))
-}
-
-extension MainScreen {
 	func swipeGesture() -> some Gesture {
-		DragGesture(minimumDistance: 20)
+		DragGesture(minimumDistance: 50)
 			.onEnded { value in
-				let threshold: CGFloat = 50
-				let isHorizontalSwipe = abs(value.translation.width) > abs(value.translation.height)
+				let threshold: CGFloat = 80
+				let screenWidth = UIScreen.currentBounds.width
+				let deleteZone: CGFloat = 80
 				
+				let startX = value.startLocation.x
+				let isFromDeleteZone = startX > screenWidth - deleteZone
+				
+				guard !isFromDeleteZone else { return }
+				
+				let isHorizontalSwipe = abs(value.translation.width) > abs(value.translation.height) * 1.2
 				guard isHorizontalSwipe else { return }
 				
-				if (value.translation.width < -threshold) && selectedTab < 1  {
-					selectedTab += 1
-				} else if (value.translation.width > threshold) && selectedTab >= 1 {
-					selectedTab -= 1
+				if value.translation.width < -threshold && selectedTab < 1 {
+					
+					withAnimation(.easeInOut(duration: 0.25)) {
+						selectedTab += 1
+					}
+				} else if value.translation.width > threshold && selectedTab >= 1 {
+					
+					withAnimation(.easeInOut(duration: 0.25)) {
+						selectedTab -= 1
+					}
 				}
 			}
 	}
+}
+
+
+#Preview {
+	MainScreen()
+		.environmentObject(BaseViewModel())
+		.environmentObject(SearchViewModel(searchText: ""))
 }

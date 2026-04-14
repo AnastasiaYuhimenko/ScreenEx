@@ -16,52 +16,27 @@ struct TopCoinsScreen: View {
 		NavigationStack {
 			
 			ZStack {
+				
+				// MARK: - background
 				Color.background
 					.ignoresSafeArea()
 				
+				// MARK: - content
 				VStack {
-					customeSearchFiel
-						.padding()
-					
-					List {
-						Section {
-									ForEach(Array(viewModel.exchangeCoins.enumerated()), id: \.offset) { _, el in
-										CoinCell(coin: el, showHoldings: false)
-									}
-								
-							} header: {
-								HStack(spacing: 0) {
-									Text("Name")
-										.frame(maxWidth: .infinity, alignment: .leading)
-									
-									Text("Price")
-										.frame(maxWidth: .infinity, alignment: .trailing)
-										.padding(.trailing, 50)
-								}
-							}
-							
-						
-					}
-					.animation(.easeInOut, value: viewModel.portfolioCoins)
-					
-					.scrollContentBackground(.hidden)
+			    if viewModel.isLoading != true {
+					coinsList
+				} else {
+					ProgressView()
+							.progressViewStyle(CircularProgressViewStyle(tint: .white))
 				}
 				
+				}
 				.navigationTitle(
-					
 					Text("Top")
-					
 				)
-				
 			}
 			.navigationBarTitleDisplayMode(.inline)
-		
-			
 		}
-		
-		
-		
-		
 	}
 }
 
@@ -75,8 +50,8 @@ extension TopCoinsScreen {
 		ZStack {
 			Capsule()
 				.frame(height: 50)
-				.foregroundStyle(Color.second)
-				.opacity(0.3)
+				.foregroundStyle(Color.searchGlass)
+			
 			
 			HStack {
 				Button {
@@ -90,5 +65,48 @@ extension TopCoinsScreen {
 			.padding(.horizontal)
 			
 		}
+	}
+}
+
+
+extension TopCoinsScreen {
+	
+	var coinsList: some View {
+		List {
+			Section {
+				
+				ForEach(Array(viewModel.exchangeCoins.enumerated()), id: \.offset) { _, el in
+					CoinCell(coin: el, showHoldings: false)
+				}
+				.listRowSeparator(.visible)
+				
+			} header: {
+				HStack(spacing: 0) {
+					Text("Name")
+						.frame(maxWidth: .infinity, alignment: .leading)
+						.frame(maxWidth: UIScreen.currentBounds.width / 2, alignment: .leading)
+					Text("Price")
+						.frame(maxWidth: UIScreen.currentBounds.width / 2, alignment: .leading)
+						.padding(.trailing, 50)
+						.padding(.leading, 10)
+				}
+			}
+			.listSectionSeparator(.hidden, edges: .top)
+			.listSectionSeparator(.hidden, edges: .bottom)
+		}
+		
+		
+		.refreshable {
+			viewModel.refresh()
+		}
+		.animation(.easeInOut, value: viewModel.portfolioCoins)
+		.safeAreaInset(edge: .top, spacing: 0) {
+			VStack(spacing: 0) {
+				customeSearchFiel
+					.padding(.horizontal)
+					.padding(.vertical, 8)
+			}
+		}
+		.scrollContentBackground(.hidden)
 	}
 }

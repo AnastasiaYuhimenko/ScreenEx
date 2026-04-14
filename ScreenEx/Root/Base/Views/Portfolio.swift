@@ -9,9 +9,9 @@ import SwiftUI
 
 struct Portfolio: View {
 	@EnvironmentObject var viewModel: BaseViewModel
-//	@State var searchQuery: String = ""
+	
 	@EnvironmentObject var searchViewModel: SearchViewModel
-
+	
 	var body: some View {
 		
 		NavigationStack {
@@ -20,69 +20,68 @@ struct Portfolio: View {
 				Color.background
 					.ignoresSafeArea()
 				
-				VStack {
-					customeSearchFiel
-						.padding()
-					
-					List {
-						Section {
-									ForEach(searchViewModel.filteredCoinsPortfolio(from: viewModel.portfolioCoins)) { el in
-										CoinCell(coin: el, showHoldings: true)
-									}
-									.onDelete { indexSet in
-										let filtered = searchViewModel.filteredCoinsPortfolio(from: viewModel.portfolioCoins)
-										let ids = indexSet.compactMap { filtered[$0].id }
-										viewModel.deletePortfolioCoins(withIds: ids)
-									}
-								
-							} header: {
-								HStack(spacing: 0) {
-									Text("Name")
-										.frame(maxWidth: .infinity, alignment: .leading)
-									Text("Holding")
-										.frame(maxWidth: .infinity, alignment: .leading)
-									
-									Text("Price")
-										.frame(maxWidth: .infinity, alignment: .trailing)
-										.padding(.trailing, 50)
-								}
+				List {
+					Section {
+							ForEach(searchViewModel.filteredCoinsPortfolio(from: viewModel.portfolioCoins)) { el in
+								CoinCell(coin: el, showHoldings: true)
 							}
+							.onDelete { indexSet in
+								let filtered = searchViewModel.filteredCoinsPortfolio(from: viewModel.portfolioCoins)
+								let ids = indexSet.compactMap { filtered[$0].id }
+								viewModel.deletePortfolioCoins(withIds: ids)
+							}
+						
+					} header: {
+						HStack(spacing: 0) {
+							Text("Name")
+								.frame(maxWidth: UIScreen.currentBounds.width / 3, alignment: .leading)
+							Text("Holding")
+								.frame(maxWidth: UIScreen.currentBounds.width / 3, alignment: .leading)
 							
-						
-					}
-					.animation(.easeInOut, value: viewModel.portfolioCoins)
-					
-					.scrollContentBackground(.hidden)
-				}
-				
-				.navigationTitle(
-					
-					Text("Portfolio")
-					
-				)
-				
-			}
-			.navigationBarTitleDisplayMode(.inline)
-			.toolbar {
-				
-				ToolbarItemGroup(placement: .topBarLeading) {
-					NavigationLink {
-						
-					} label: {
-						Image(systemName: "plus")
+							Text("Price")
+								.frame(maxWidth: UIScreen.currentBounds.width / 3, alignment: .leading)
+								.padding(.trailing, 50)
+								.padding(.leading, 10)
+						}
 					}
 					
+					
 				}
-				
+				.refreshable {
+					viewModel.refresh()
+				}
+				.animation(.easeInOut, value: viewModel.portfolioCoins)
+				.navigationBarTitleDisplayMode(.inline)
+				.navigationTitle("Portfolio")
+				.toolbar {
+					ToolbarItem(placement: .topBarLeading) {
+						NavigationLink {
+							
+						} label: {
+							Image(systemName: "plus")
+						}
+					}
+				}
+				.scrollContentBackground(.hidden)
+				.safeAreaInset(edge: .top, spacing: 0) {
+					VStack(spacing: 0) {
+						customeSearchFiel
+							.padding(.horizontal)
+							.padding(.vertical, 8)
+						
+					}
+				}
+				.background(Color.background)
 			}
 			
+			
 		}
-		
-		
-		
-		
+		.navigationBarTitleDisplayMode(.inline)
 	}
 }
+	
+
+
 
 #Preview {
 	Portfolio()
@@ -96,10 +95,11 @@ extension Portfolio {
 	
 	var customeSearchFiel: some View {
 		ZStack {
+			
 			Capsule()
 				.frame(height: 50)
-				.foregroundStyle(Color.second)
-				.opacity(0.3)
+				.foregroundStyle(Color.searchGlass)
+				
 			
 			HStack {
 				Button {

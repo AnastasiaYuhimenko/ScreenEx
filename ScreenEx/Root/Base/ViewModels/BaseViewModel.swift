@@ -8,23 +8,41 @@
 import Foundation
 import Combine
 import SwiftUI
+
 @MainActor
 class BaseViewModel: ObservableObject {
 	@Published var exchangeCoins: [ExchangeModel] = []
 	@Published var portfolioCoins: [ExchangeModel] = []
-	
+	@Published var isLoading: Bool = false
+	@Published var loadError: Error?
+
+	private let dataService: MarketDataService = MarketDataService()
+	var cancellabels = Set<AnyCancellable>()
+
 	init() {
 		withAnimation(.easeInOut) {
-			DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-				self.exchangeCoins.append(CoinPreviewModel.shared.coin)
-				self.exchangeCoins.append(CoinPreviewModel.shared.coin)
-				self.exchangeCoins.append(CoinPreviewModel.shared.coin)
-				self.portfolioCoins.append(CoinPreviewModel.shared.coin)
-				self.portfolioCoins.append(CoinPreviewModel.shared.coin)
-				self.portfolioCoins.append(CoinPreviewModel.shared.coin)
-			}
-			
+			self.portfolioCoins.append(CoinPreviewModel.shared.coin)
+			self.portfolioCoins.append(CoinPreviewModel.shared.coin)
+			addSubscribers()
 		}
+	}
+	
+	func addSubscribers() {
+		dataService.$exchangeCoins
+			.sink { [weak self] returnedCoins in
+				self?.exchangeCoins = returnedCoins
+			}
+			.store(in: &cancellabels)
+
+		dataService.$isLoading
+			.assign(to: &$isLoading)
+
+		dataService.$error
+			.assign(to: &$loadError)
+	}
+
+	func refresh() {
+		dataService.fetchMarketData()
 	}
 	
 	func deletePortfolioCoins(at offsets: IndexSet) {
@@ -36,7 +54,6 @@ class BaseViewModel: ObservableObject {
 		}
 	}
 	
-	/// Удаление по id (нужно при удалении из отфильтрованного списка).
 	func deletePortfolioCoins(withIds ids: [String]) {
 		let idSet = Set(ids)
 		guard !idSet.isEmpty else { return }

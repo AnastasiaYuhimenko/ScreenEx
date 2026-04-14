@@ -12,8 +12,13 @@ struct CoinCell: View {
 	
 	let coin: ExchangeModel
 	let showHoldings: Bool
+	
+	var distance: CGFloat {
+		showHoldings ? 3 : 2
+	}
+	
 	var body: some View {
-		
+	
 		HStack(spacing: 0) {
 			// MARK: - Name
 			HStack {
@@ -31,7 +36,9 @@ struct CoinCell: View {
 						.foregroundStyle(Color.secondary)
 				}
 			}
-			.frame(maxWidth: .infinity, alignment: .leading)
+//			.frame(maxWidth: .infinity, alignment: .leading)
+			.frame(maxWidth: (UIScreen.currentBounds.width / distance), alignment: .leading)
+			
 			
 	
 			// MARK: - Holding
@@ -47,7 +54,9 @@ struct CoinCell: View {
 						Text("\((coin.currentHoldings ?? 0).convertNumberToString2())")
 					}
 				}
-				.frame(maxWidth: .infinity, alignment: .leading)
+//				.frame(maxWidth: .infinity, alignment: .leading)
+				.frame(maxWidth: (UIScreen.currentBounds.width / distance), alignment: .leading)
+			
 			}
 			// MARK: - Price
 			VStack(alignment: .leading) {
@@ -65,7 +74,8 @@ struct CoinCell: View {
 						.offset(y: 1)
 				}
 			}
-			.frame(maxWidth: .infinity, alignment: .trailing)
+			.frame(maxWidth: UIScreen.currentBounds.width / distance, alignment: .leading)
+			.padding(.leading, 10)
 		}
 		.lineLimit(1)
 	}
@@ -94,8 +104,9 @@ struct CoinCell: View {
 							.frame(maxWidth: .infinity, alignment: .leading)
 						
 						Text("Price")
-							.frame(maxWidth: .infinity, alignment: .trailing)
-							.padding(.trailing, 50)
+//							.frame(maxWidth: .infinity, alignment: .trailing)
+							.frame(maxWidth: UIScreen.currentBounds.width / 3, alignment: .leading)
+//							.padding(.trailing, 50)
 					}
 				}
 				
