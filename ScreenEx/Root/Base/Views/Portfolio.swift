@@ -6,8 +6,10 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct Portfolio: View {
+	@Environment(\.managedObjectContext) private var managedObjectContext
 	@EnvironmentObject var viewModel: PortfolioModelView
 	@EnvironmentObject var coinManager: AddCoinsToPortfolioViewModel
 	@EnvironmentObject var searchViewModel: SearchViewModel
@@ -52,10 +54,13 @@ struct Portfolio: View {
 					
 					
 				} 
+				.onAppear {
+					coinManager.fetchCoinsFromCoreData(context: managedObjectContext)
+				}
 				.refreshable {
 					viewModel.refresh(coinsID: coinManager.CoinsID)
 				}
-				.onChange(of: coinManager.CoinsID) { _  in
+				.onChange(of: coinManager.CoinsID.map(\.0)) { _  in
 					viewModel.refresh(coinsID: coinManager.CoinsID)
 				}
 				.scrollContentBackground(.hidden)
@@ -95,6 +100,7 @@ struct Portfolio: View {
 		.environmentObject(PortfolioModelView())
 		.environmentObject(BaseViewModel())
 		.environmentObject(SearchViewModel(searchText: ""))
+		.environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
 }
 
 extension Portfolio {
@@ -137,8 +143,7 @@ extension Portfolio {
 						let filtered = searchViewModel.filteredCoinsPortfolio(from: viewModel.portfolioCoins)
 						let ids = indexSet.compactMap { filtered[$0].id }
 						if let firstId = ids.first {
-							coinManager.deleteCoin(id: firstId)
-						    
+							coinManager.deleteCoin(id: firstId, context: managedObjectContext)
 						}
 					}
 //				

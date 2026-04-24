@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 @main
 struct ScreenExApp: App {
@@ -14,6 +15,7 @@ struct ScreenExApp: App {
 	@StateObject private var searchViewModel: SearchViewModel = SearchViewModel(searchText: "")
 	@StateObject private var portfolioModelView: PortfolioModelView = PortfolioModelView()
 	@StateObject private var coinManager: AddCoinsToPortfolioViewModel = AddCoinsToPortfolioViewModel()
+	let persistenceController: PersistenceController = PersistenceController.shared
 	
     var body: some Scene {
         WindowGroup {
@@ -22,6 +24,7 @@ struct ScreenExApp: App {
 			.environmentObject(searchViewModel)
 			.environmentObject(portfolioModelView)
 			.environmentObject(coinManager)
+			.environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
 		
     }

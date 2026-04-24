@@ -22,7 +22,7 @@ struct PortfolioCoinItem: Identifiable {
 		guard case let .success(coin) = state else { return nil }
 		return coin
 	}
-
+	var count: Double
 	var errorMessage: String? {
 		guard case let .failed(message) = state else { return nil }
 		return message
@@ -44,7 +44,7 @@ class PortfolioService {
 		self.apiClient = apiClient
 	}
 	
-	func fetchCoins(coinsID: [String]) {
+	func fetchCoins(coinsID: [(String, Double)]) {
 		fetchTask?.cancel()
 		let orderedUniqueIDs = Self.uniquePreservingOrder(coinsID)
 		fetchTask = Task {
@@ -53,30 +53,32 @@ class PortfolioService {
 				error = nil
 				portfolioCoins = []
 				portfolioItems = orderedUniqueIDs.map {
-					PortfolioCoinItem(id: $0, state: .loading)
+					PortfolioCoinItem(id: $0.0, state: .loading, count: $0.1)
 				}
 			}
 			print("[PortfolioService] Starting API request...")
-			for elementId in orderedUniqueIDs {
+			for element in orderedUniqueIDs {
+				
 				if Task.isCancelled { break }
 				let resource = Resource<[ExchangeModel], CoinRequest>(
-					request: CoinRequest(elementId: elementId)
+					request: CoinRequest(elementId: element.0)
 				)
 				do {
 					let response = try await apiClient.dataTask(with: resource)
-					guard let coin = response.first else {
+					guard var coin = response.first else {
 						throw NSError(
 							domain: "com.AnastasiaYukhimenko.ScreenEx.Portfolio",
 							code: 0,
-							userInfo: [NSLocalizedDescriptionKey: "Empty response for id \(elementId)"]
+							userInfo: [NSLocalizedDescriptionKey: "Empty response for id \(element.0)"]
 						)
 					}
 					print("[PortfolioService] Recived \(coin.name ?? "Nill")")
 					
 					await MainActor.run {
 						guard !Task.isCancelled else { return }
+						coin = coin.updateHoldings(amount: element.1)
 						portfolioCoins.append(coin)
-						updateItemState(for: elementId, state: .success(coin))
+						updateItemState(for: element.0, state: .success(coin))
 					}
 				} catch {
 					guard !Task.isCancelled else { break }
@@ -84,7 +86,7 @@ class PortfolioService {
 						if self.error == nil {
 							self.error = error
 						}
-						updateItemState(for: elementId, state: .failed(message: error.localizedDescription))
+						updateItemState(for: element.0, state: .failed(message: error.localizedDescription))
 					}
 					
 					print("[PortfolioService] ERROR \(error.localizedDescription)")
@@ -99,9 +101,9 @@ class PortfolioService {
 		
 	}
 
-	private static func uniquePreservingOrder(_ ids: [String]) -> [String] {
+	private static func uniquePreservingOrder(_ ids: [(String, Double)]) -> [(String, Double)] {
 		var seen = Set<String>()
-		return ids.filter { seen.insert($0).inserted }
+		return ids.filter { seen.insert($0.0).inserted }
 	}
 
 	@MainActor

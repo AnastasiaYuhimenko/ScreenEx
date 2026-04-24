@@ -50,7 +50,7 @@ class PortfolioModelView: ObservableObject {
 			.assign(to: &$portfolioItems)
 	}
 
-	func refresh(coinsID: [String]) {
+	func refresh(coinsID: [(String, Double)]) {
 		dataService.fetchCoins(coinsID: coinsID)
 	}
 //	
