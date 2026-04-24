@@ -7,16 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5D60E9762F9B6FDB00AAB4BA /* Coins+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D60E9742F9B6FDB00AAB4BA /* Coins+CoreDataClass.swift */; };
+		5D60E9772F9B6FDB00AAB4BA /* Coins+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D60E9752F9B6FDB00AAB4BA /* Coins+CoreDataProperties.swift */; };
 		5D7DFAED2F8CDF0E0098249F /* StatefulTabView in Frameworks */ = {isa = PBXBuildFile; productRef = 5D7DFAEC2F8CDF0E0098249F /* StatefulTabView */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		5D05A54B2F8113A400EDEC9C /* ScreenEx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenEx.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D60E9742F9B6FDB00AAB4BA /* Coins+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Coins+CoreDataClass.swift"; sourceTree = "<group>"; };
+		5D60E9752F9B6FDB00AAB4BA /* Coins+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Coins+CoreDataProperties.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5DC6712B2F953C140070DBC7 /* Exceptions for "ScreenEx" folder in "ScreenEx" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5D05A54A2F8113A400EDEC9C /* ScreenEx */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		5D05A54D2F8113A400EDEC9C /* ScreenEx */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5DC6712B2F953C140070DBC7 /* Exceptions for "ScreenEx" folder in "ScreenEx" target */,
+			);
 			path = ScreenEx;
 			sourceTree = "<group>";
 		};
@@ -37,6 +54,8 @@
 		5D05A5422F8113A400EDEC9C = {
 			isa = PBXGroup;
 			children = (
+				5D60E9742F9B6FDB00AAB4BA /* Coins+CoreDataClass.swift */,
+				5D60E9752F9B6FDB00AAB4BA /* Coins+CoreDataProperties.swift */,
 				5D05A54D2F8113A400EDEC9C /* ScreenEx */,
 				5D05A54C2F8113A400EDEC9C /* Products */,
 			);
@@ -128,6 +147,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D60E9762F9B6FDB00AAB4BA /* Coins+CoreDataClass.swift in Sources */,
+				5D60E9772F9B6FDB00AAB4BA /* Coins+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -258,16 +279,17 @@
 		5D05A5572F8113A600EDEC9C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = ProdIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 555X6626QY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ScreenEx/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -295,16 +317,17 @@
 		5D05A5582F8113A600EDEC9C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = ProdIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 555X6626QY;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ScreenEx/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;

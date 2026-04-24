@@ -22,11 +22,9 @@ struct CoinCell: View {
 		HStack(spacing: 0) {
 			// MARK: - Name
 			HStack {
-				Image(/*systemName: "bitcoinsign.circle"*/ "\(coin.image)")
-
-					.resizable()
-					.clipShape(Circle())
-					.frame(width: 40, height: 40)
+				CoinImage(imageUrl: coin.image ?? "")
+					.id(coin.image) // подписывает на обновление coin.image
+					
 				VStack(alignment: .leading) {
 					Text(coin.name ?? "")
 					
@@ -36,7 +34,6 @@ struct CoinCell: View {
 						.foregroundStyle(Color.secondary)
 				}
 			}
-//			.frame(maxWidth: .infinity, alignment: .leading)
 			.frame(maxWidth: (UIScreen.currentBounds.width / distance), alignment: .leading)
 			
 			
@@ -54,13 +51,12 @@ struct CoinCell: View {
 						Text("\((coin.currentHoldings ?? 0).convertNumberToString2())")
 					}
 				}
-//				.frame(maxWidth: .infinity, alignment: .leading)
 				.frame(maxWidth: (UIScreen.currentBounds.width / distance), alignment: .leading)
 			
 			}
 			// MARK: - Price
 			VStack(alignment: .leading) {
-				Text("\((coin.currentPrice ?? 0).formatCurrency6())")
+				Text("\((coin.currentPrice ?? 404).formatCurrency6())")
 					.fontWeight(.medium)
 					.foregroundStyle((coin.priceChangePercentage24H ?? 0) >= 0 ? Color.colorForPricesUp : Color.colorForPricesDown)
 				

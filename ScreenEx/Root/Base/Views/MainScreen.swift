@@ -74,4 +74,6 @@ struct MainScreen: View {
 	MainScreen()
 		.environmentObject(BaseViewModel())
 		.environmentObject(SearchViewModel(searchText: ""))
+		.environmentObject(PortfolioModelView())
+		.environmentObject(AddCoinsToPortfolioViewModel())
 }

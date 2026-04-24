@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct Portfolio: View {
-	@EnvironmentObject var viewModel: BaseViewModel
-	
+	@EnvironmentObject var viewModel: PortfolioModelView
+	@EnvironmentObject var coinManager: AddCoinsToPortfolioViewModel
 	@EnvironmentObject var searchViewModel: SearchViewModel
 	
 	var body: some View {
@@ -17,21 +17,26 @@ struct Portfolio: View {
 		NavigationStack {
 			
 			ZStack {
+				
+				// MARK: - background
 				Color.background
 					.ignoresSafeArea()
 				
+				// MARK: - content
 				List {
 					Section {
-							ForEach(searchViewModel.filteredCoinsPortfolio(from: viewModel.portfolioCoins)) { el in
-								CoinCell(coin: el, showHoldings: true)
+						if viewModel.isLoading || searchViewModel.isLoading {
+							Group {
+//								Spacer()
+								ProgressView()
+//								Spacer()
 							}
-							.onDelete { indexSet in
-								let filtered = searchViewModel.filteredCoinsPortfolio(from: viewModel.portfolioCoins)
-								let ids = indexSet.compactMap { filtered[$0].id }
-								viewModel.deletePortfolioCoins(withIds: ids)
-							}
-						
-					} header: {
+							.transition(.opacity)
+						} else {
+							portfolioCoinsList
+								.transition(.opacity)
+						}
+					} header : {
 						HStack(spacing: 0) {
 							Text("Name")
 								.frame(maxWidth: UIScreen.currentBounds.width / 3, alignment: .leading)
@@ -46,37 +51,38 @@ struct Portfolio: View {
 					}
 					
 					
-				}
+				} 
 				.refreshable {
-					viewModel.refresh()
+					viewModel.refresh(coinsID: coinManager.CoinsID)
 				}
-				.animation(.easeInOut, value: viewModel.portfolioCoins)
-				.navigationBarTitleDisplayMode(.inline)
-				.navigationTitle("Portfolio")
+				.onChange(of: coinManager.CoinsID) { _  in
+					viewModel.refresh(coinsID: coinManager.CoinsID)
+				}
+				.scrollContentBackground(.hidden)
+				.animation(.spring(duration: 1), value: viewModel.isLoading)
 				.toolbar {
 					ToolbarItem(placement: .topBarLeading) {
 						NavigationLink {
-							
+							AddScreen()
 						} label: {
 							Image(systemName: "plus")
 						}
 					}
 				}
-				.scrollContentBackground(.hidden)
+				.navigationTitle("Portfolio")
+				.navigationBarTitleDisplayMode(.inline)
 				.safeAreaInset(edge: .top, spacing: 0) {
 					VStack(spacing: 0) {
-						customeSearchFiel
+						customeSearchField
 							.padding(.horizontal)
 							.padding(.vertical, 8)
-						
 					}
 				}
-				.background(Color.background)
+				
 			}
-			
-			
 		}
 		.navigationBarTitleDisplayMode(.inline)
+		
 	}
 }
 	
@@ -85,33 +91,71 @@ struct Portfolio: View {
 
 #Preview {
 	Portfolio()
+		.environmentObject(AddCoinsToPortfolioViewModel())
+		.environmentObject(PortfolioModelView())
 		.environmentObject(BaseViewModel())
 		.environmentObject(SearchViewModel(searchText: ""))
 }
 
 extension Portfolio {
-	
-	
-	
-	var customeSearchFiel: some View {
+	var customeSearchField: some View {
+		
 		ZStack {
 			
 			Capsule()
 				.frame(height: 50)
 				.foregroundStyle(Color.searchGlass)
+				.glassEffect()
 				
 			
 			HStack {
-				Button {
-					
-				} label: {
-					Image(systemName: "magnifyingglass")
-				}
+				Image(systemName: "magnifyingglass")
+					.foregroundStyle(Color.accent)
+
 				TextField("Search", text: $searchViewModel.searchText)
+					.textInputAutocapitalization(.never)
+					.autocorrectionDisabled(true)
 					
 			}
 			.padding(.horizontal)
 			
 		}
+		
+	}
+}
+
+
+extension Portfolio {
+	var portfolioCoinsList: some View {
+//		List {
+//			Section {
+					ForEach(searchViewModel.filteredCoinsPortfolio(from: viewModel.portfolioCoins)) { el in
+						CoinCell(coin: el, showHoldings: true)
+							
+					}
+					.onDelete { indexSet in
+						let filtered = searchViewModel.filteredCoinsPortfolio(from: viewModel.portfolioCoins)
+						let ids = indexSet.compactMap { filtered[$0].id }
+						if let firstId = ids.first {
+							coinManager.deleteCoin(id: firstId)
+						    
+						}
+					}
+//				
+//			} header: {
+//				
+//			}
+//			
+//			
+//			
+//		}
+//		.refreshable {
+//			viewModel.refresh(coinsID: coinManager.CoinsID)
+//		}
+//		.onChange(of: coinManager.CoinsID) { _  in
+//			viewModel.refresh(coinsID: coinManager.CoinsID)
+//		}
+//		.scrollContentBackground(.hidden)
+//	
 	}
 }

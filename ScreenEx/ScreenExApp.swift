@@ -12,14 +12,16 @@ struct ScreenExApp: App {
 	
 	@StateObject private var viewModel: BaseViewModel = BaseViewModel()
 	@StateObject private var searchViewModel: SearchViewModel = SearchViewModel(searchText: "")
+	@StateObject private var portfolioModelView: PortfolioModelView = PortfolioModelView()
+	@StateObject private var coinManager: AddCoinsToPortfolioViewModel = AddCoinsToPortfolioViewModel()
 	
     var body: some Scene {
         WindowGroup {
-			NavigationView {
-				MainScreen()
-			}
+			MainScreen()
 			.environmentObject(viewModel)
 			.environmentObject(searchViewModel)
+			.environmentObject(portfolioModelView)
+			.environmentObject(coinManager)
         }
 		
     }

@@ -21,7 +21,7 @@ protocol Requestable {
 	var parameters: [URLQueryItem] { get }
 	var headers: [HTTPHeaderKey: String] { get }
 	var body: Body? { get }
-	/// When set, applied to `URLRequest.timeoutInterval`.
+	
 	var timeoutInterval: TimeInterval? { get }
 
 	func fullURL(baseURL: URL) -> URL?
@@ -35,6 +35,16 @@ extension Requestable {
 	var timeoutInterval: TimeInterval? { nil }
 
 	func fullURL(baseURL: URL) -> URL? {
+		if let absoluteURL = URL(string: path), absoluteURL.scheme != nil {
+			guard var absoluteComponents = URLComponents(url: absoluteURL, resolvingAgainstBaseURL: false) else {
+				return absoluteURL
+			}
+			if !parameters.isEmpty {
+				absoluteComponents.queryItems = parameters
+			}
+			return absoluteComponents.url
+		}
+
 		guard let url = URL(string: path, relativeTo: baseURL),
 			  var urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: true)
 		else { return nil }

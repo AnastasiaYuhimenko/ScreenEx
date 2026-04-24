@@ -15,8 +15,6 @@ class MarketDataService {
 	@Published var error: Error?
 
 	private let apiClient: APIClient
-	private var retryTask: Task<Void, Never>?
-	private let backgroundRetryDelay: TimeInterval = 15.0
 
 	init(apiClient: APIClient = .init()) {
 		self.apiClient = apiClient
@@ -24,9 +22,6 @@ class MarketDataService {
 	}
 
 	func fetchMarketData() {
-		print("📊 [MarketDataService] fetchMarketData() called")
-		retryTask?.cancel()
-		retryTask = nil
 
 		let resource = Resource<[ExchangeModel], CoinGeckoMarketsRequest>(
 			request: CoinGeckoMarketsRequest()
@@ -53,23 +48,7 @@ class MarketDataService {
 					isLoading = false
 				}
 				print("📊 [MarketDataService] ❌ Error: \(error.localizedDescription)")
-				print("📊 [MarketDataService] Scheduling background retry in \(backgroundRetryDelay)s...")
-				scheduleBackgroundRetry()
-			}
-		}
-	}
-
-	private func scheduleBackgroundRetry() {
-		retryTask?.cancel()
-		retryTask = Task {
-			do {
-				try await Task.sleep(nanoseconds: UInt64(backgroundRetryDelay * 1_000_000_000))
-				if !Task.isCancelled {
-					print("📊 [MarketDataService] 🔄 Background retry triggered")
-					fetchMarketData()
-				}
-			} catch {
-				print("📊 [MarketDataService] Background retry cancelled")
+				
 			}
 		}
 	}

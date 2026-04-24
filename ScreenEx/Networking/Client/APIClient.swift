@@ -14,7 +14,7 @@ struct RetryConfiguration {
 	let maxDelay: TimeInterval
 
 	static let `default` = RetryConfiguration(
-		maxAttempts: 10,
+		maxAttempts: 3,
 		initialDelay: 0.5,
 		multiplier: 2.0,
 		maxDelay: 10.0
@@ -67,15 +67,23 @@ final class APIClient {
 
 				if (200 ..< 300).contains(http.statusCode) {
 					print("✅ [APIClient] Request successful")
-					return try resource.decode(data)
+					do {
+						return try resource.decode(data)
+					} catch {
+						print("❌ [APIClient] Decode error: \(error.localizedDescription)")
+						print("📦 [APIClient] Raw response body: \(Self.responseBodyPreview(from: data))")
+						throw error
+					}
 				}
 
 				if Self.isRetryableStatusCode(http.statusCode) {
 					print("⚠️ [APIClient] Retryable status code: \(http.statusCode)")
+					print("📦 [APIClient] Raw response body: \(Self.responseBodyPreview(from: data))")
 					throw URLError(.badServerResponse)
 				}
 
 				print("❌ [APIClient] Non-retryable status code: \(http.statusCode)")
+				print("📦 [APIClient] Raw response body: \(Self.responseBodyPreview(from: data))")
 				throw URLError(.badServerResponse)
 			} catch {
 				lastError = error
@@ -118,5 +126,21 @@ final class APIClient {
 
 	private static func isRetryableStatusCode(_ statusCode: Int) -> Bool {
 		[408, 429, 500, 502, 503, 504].contains(statusCode)
+	}
+
+	private static func responseBodyPreview(from data: Data) -> String {
+		guard !data.isEmpty else { return "<empty>" }
+
+		if let object = try? JSONSerialization.jsonObject(with: data),
+		   let prettyData = try? JSONSerialization.data(withJSONObject: object, options: [.prettyPrinted]),
+		   let prettyString = String(data: prettyData, encoding: .utf8) {
+			return prettyString
+		}
+
+		if let utf8 = String(data: data, encoding: .utf8) {
+			return utf8
+		}
+
+		return "<non-utf8 body, \(data.count) bytes>"
 	}
 }

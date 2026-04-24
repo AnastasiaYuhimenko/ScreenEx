@@ -9,8 +9,8 @@ import SwiftUI
 
 struct TopCoinsScreen: View {
 	@EnvironmentObject var viewModel: BaseViewModel
-	@State var searchQuery: String = ""
-
+	@EnvironmentObject var searchViewModel: SearchViewModel
+	
 	var body: some View {
 		
 		NavigationStack {
@@ -23,19 +23,28 @@ struct TopCoinsScreen: View {
 				
 				// MARK: - content
 				VStack {
-			    if viewModel.isLoading != true {
-					coinsList
-				} else {
-					ProgressView()
-							.progressViewStyle(CircularProgressViewStyle(tint: .white))
+					if viewModel.isLoading != true {
+						coinsList
+					} else {
+						Spacer()
+						ProgressView()
+						Spacer()
+					}
+					
 				}
-				
+				.safeAreaInset(edge: .top, spacing: 0) {
+					VStack(spacing: 0) {
+						customeSearchFiel
+							.padding(.horizontal)
+							.padding(.vertical, 8)
+					}
 				}
 				.navigationTitle(
 					Text("Top")
 				)
+				.navigationBarTitleDisplayMode(.inline)
 			}
-			.navigationBarTitleDisplayMode(.inline)
+		
 		}
 	}
 }
@@ -43,6 +52,7 @@ struct TopCoinsScreen: View {
 #Preview {
 	TopCoinsScreen()
 		.environmentObject(BaseViewModel())
+		.environmentObject(SearchViewModel(searchText: ""))
 }
 
 extension TopCoinsScreen {
@@ -51,16 +61,16 @@ extension TopCoinsScreen {
 			Capsule()
 				.frame(height: 50)
 				.foregroundStyle(Color.searchGlass)
+				.glassEffect()
 			
 			
 			HStack {
-				Button {
-					
-				} label: {
-					Image(systemName: "magnifyingglass")
-				}
-				TextField("Search", text: $searchQuery)
-					
+				Image(systemName: "magnifyingglass")
+					.foregroundStyle(Color.accent)
+				TextField("Search", text: $searchViewModel.searchText)
+					.textInputAutocapitalization(.never)
+					.autocorrectionDisabled(true)
+				
 			}
 			.padding(.horizontal)
 			
@@ -75,7 +85,7 @@ extension TopCoinsScreen {
 		List {
 			Section {
 				
-				ForEach(Array(viewModel.exchangeCoins.enumerated()), id: \.offset) { _, el in
+				ForEach(Array(searchViewModel.filteredCoinsAll(from: viewModel.exchangeCoins).enumerated()), id: \.offset) { _, el in
 					CoinCell(coin: el, showHoldings: false)
 				}
 				.listRowSeparator(.visible)
@@ -99,14 +109,7 @@ extension TopCoinsScreen {
 		.refreshable {
 			viewModel.refresh()
 		}
-		.animation(.easeInOut, value: viewModel.portfolioCoins)
-		.safeAreaInset(edge: .top, spacing: 0) {
-			VStack(spacing: 0) {
-				customeSearchFiel
-					.padding(.horizontal)
-					.padding(.vertical, 8)
-			}
-		}
+		.animation(.easeInOut, value: viewModel.exchangeCoins)
 		.scrollContentBackground(.hidden)
 	}
 }
