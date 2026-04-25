@@ -44,6 +44,9 @@ struct AddScreen: View {
 							.padding(.vertical, 8)
 					}
 				}
+				.refreshable {
+					viewModel.refresh()
+				}
 				
 			}
 			.navigationTitle("Add coin to portfolio")

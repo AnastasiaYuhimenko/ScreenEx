@@ -27,85 +27,38 @@ struct Portfolio: View {
 					.ignoresSafeArea()
 				
 				// MARK: - content
-				List {
-					Section {
-						if viewModel.isLoading || searchViewModel.isLoading {
-							Group {
-//								Spacer()
-								ProgressView()
-//								Spacer()
-							}
-							.transition(.opacity)
-						} else {
-							portfolioCoinsList
-								.transition(.opacity)
-						}
-					} header : {
-						HStack(spacing: 0) {
-							Text("Name")
-								.frame(maxWidth: UIScreen.currentBounds.width / 3, alignment: .leading)
-							Text("Holding")
-								.frame(maxWidth: UIScreen.currentBounds.width / 3, alignment: .leading)
-							
-							Text("Price")
-								.frame(maxWidth: UIScreen.currentBounds.width / 3, alignment: .leading)
-								.padding(.trailing, 50)
-								.padding(.leading, 10)
-						}
-					}
-					
-					
-				}
-				.simultaneousGesture(
-					TapGesture().onEnded {
-						hideKeyboardAndResetFocus()
-					}
-				)
-				.onAppear {
-					coinManager.fetchCoinsFromCoreData(context: managedObjectContext)
-				}
-				.onDisappear {
-					hideKeyboardAndResetFocus()
-				}
-				.refreshable {
-					viewModel.refresh(coinsID: coinManager.CoinsID)
-				}
-				.onChange(of: coinManager.CoinsID.map(\.0)) { _  in
-					viewModel.refresh(coinsID: coinManager.CoinsID)
-				}
-				.scrollContentBackground(.hidden)
-				.animation(.spring(duration: 1), value: viewModel.isLoading)
-				.toolbar {
-					ToolbarItem(placement: .topBarLeading) {
-						NavigationLink {
-							AddScreen(searchViewModel: SearchViewModel(searchText: ""))
-						} label: {
-							Image(systemName: "plus")
-						}
-					}
-				}
-				.navigationTitle("Portfolio")
-				.navigationBarTitleDisplayMode(.inline)
-				.safeAreaInset(edge: .top, spacing: 0) {
-					VStack(spacing: 0) {
-						customeSearchField
-							.padding(.horizontal)
-							.padding(.vertical, 8)
-					}
+				
+				if !viewModel.isLoading || !searchViewModel.isLoading {
+					portfolioCoinsList
+				} else {
+					Spacer()
+					ProgressView()
+					Spacer()
 				}
 				
+				
 			}
-			.contentShape(Rectangle())
-			.onTapGesture {
-				hideKeyboardAndResetFocus()
+			.navigationTitle("Portfolio")
+			.navigationBarTitleDisplayMode(.inline)
+			.safeAreaInset(edge: .top, spacing: 0) {
+				VStack(spacing: 0) {
+					customeSearchField
+						.padding(.horizontal)
+						.padding(.vertical, 8)
+				}
 			}
+			
 		}
+		//			.contentShape(Rectangle())
+		//			.onTapGesture {
+		//				hideKeyboardAndResetFocus()
+		//			}
 		.navigationBarTitleDisplayMode(.inline)
 		
+		
 	}
-}
 	
-
+}
 
 
 #Preview {
@@ -157,34 +110,78 @@ extension Portfolio {
 
 extension Portfolio {
 	var portfolioCoinsList: some View {
-//		List {
-//			Section {
-					ForEach(searchViewModel.filteredCoinsPortfolio(from: viewModel.portfolioCoins)) { el in
-						CoinCell(coin: el, showHoldings: true)
-							
+		
+		List {
+			Section {
+				ForEach(searchViewModel.filteredCoinsPortfolio(from: viewModel.portfolioCoins)) { el in
+					CoinCell(coin: el, showHoldings: true)
+					
+				}
+				.onDelete { indexSet in
+					let filtered = searchViewModel.filteredCoinsPortfolio(from: viewModel.portfolioCoins)
+					let ids = indexSet.compactMap { filtered[$0].id }
+					if let firstId = ids.first {
+						coinManager.deleteCoin(id: firstId, context: managedObjectContext)
 					}
-					.onDelete { indexSet in
-						let filtered = searchViewModel.filteredCoinsPortfolio(from: viewModel.portfolioCoins)
-						let ids = indexSet.compactMap { filtered[$0].id }
-						if let firstId = ids.first {
-							coinManager.deleteCoin(id: firstId, context: managedObjectContext)
-						}
-					}
-//				
-//			} header: {
-//				
-//			}
-//			
-//			
-//			
-//		}
-//		.refreshable {
-//			viewModel.refresh(coinsID: coinManager.CoinsID)
-//		}
-//		.onChange(of: coinManager.CoinsID) { _  in
-//			viewModel.refresh(coinsID: coinManager.CoinsID)
-//		}
-//		.scrollContentBackground(.hidden)
-//	
+				}
+			} header : {
+				HStack(spacing: 0) {
+					Text("Name")
+						.frame(maxWidth: UIScreen.currentBounds.width / 3, alignment: .leading)
+					Text("Holding")
+						.frame(maxWidth: UIScreen.currentBounds.width / 3, alignment: .leading)
+					
+					Text("Price")
+						.frame(maxWidth: UIScreen.currentBounds.width / 3, alignment: .leading)
+						.padding(.trailing, 50)
+						.padding(.leading, 10)
+				}
+			}
+			
+			//
+			//			} header: {
+			//
+			//			}
+			//
+			//
+			//
+			//		}
+			//		.refreshable {
+			//			viewModel.refresh(coinsID: coinManager.CoinsID)
+			//		}
+			//		.onChange(of: coinManager.CoinsID) { _  in
+			//			viewModel.refresh(coinsID: coinManager.CoinsID)
+			//		}
+			//		.scrollContentBackground(.hidden)
+			//
+		}
+		.simultaneousGesture(
+			TapGesture().onEnded {
+				hideKeyboardAndResetFocus()
+			}
+		)
+		.onAppear {
+			coinManager.fetchCoinsFromCoreData(context: managedObjectContext)
+		}
+		.onDisappear {
+			hideKeyboardAndResetFocus()
+		}
+		.refreshable {
+			viewModel.refresh(coinsID: coinManager.CoinsID)
+		}
+		.onChange(of: coinManager.CoinsID.map(\.0)) { _  in
+			viewModel.refresh(coinsID: coinManager.CoinsID)
+		}
+		.scrollContentBackground(.hidden)
+		.animation(.spring(duration: 1), value: viewModel.isLoading)
+		.toolbar {
+			ToolbarItem(placement: .topBarLeading) {
+				NavigationLink {
+					AddScreen(searchViewModel: SearchViewModel(searchText: ""))
+				} label: {
+					Image(systemName: "plus")
+				}
+			}
+		}
 	}
 }
