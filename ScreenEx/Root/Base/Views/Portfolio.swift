@@ -7,12 +7,14 @@
 
 import SwiftUI
 import CoreData
+import UIKit
 
 struct Portfolio: View {
 	@Environment(\.managedObjectContext) private var managedObjectContext
 	@EnvironmentObject var viewModel: PortfolioModelView
 	@EnvironmentObject var coinManager: AddCoinsToPortfolioViewModel
-	@EnvironmentObject var searchViewModel: SearchViewModel
+	@StateObject var searchViewModel: SearchViewModel
+	@FocusState private var isSearchFieldFocused: Bool
 	
 	var body: some View {
 		
@@ -53,9 +55,17 @@ struct Portfolio: View {
 					}
 					
 					
-				} 
+				}
+				.simultaneousGesture(
+					TapGesture().onEnded {
+						hideKeyboardAndResetFocus()
+					}
+				)
 				.onAppear {
 					coinManager.fetchCoinsFromCoreData(context: managedObjectContext)
+				}
+				.onDisappear {
+					hideKeyboardAndResetFocus()
 				}
 				.refreshable {
 					viewModel.refresh(coinsID: coinManager.CoinsID)
@@ -68,7 +78,7 @@ struct Portfolio: View {
 				.toolbar {
 					ToolbarItem(placement: .topBarLeading) {
 						NavigationLink {
-							AddScreen()
+							AddScreen(searchViewModel: SearchViewModel(searchText: ""))
 						} label: {
 							Image(systemName: "plus")
 						}
@@ -85,6 +95,10 @@ struct Portfolio: View {
 				}
 				
 			}
+			.contentShape(Rectangle())
+			.onTapGesture {
+				hideKeyboardAndResetFocus()
+			}
 		}
 		.navigationBarTitleDisplayMode(.inline)
 		
@@ -95,11 +109,10 @@ struct Portfolio: View {
 
 
 #Preview {
-	Portfolio()
+	Portfolio(searchViewModel: SearchViewModel(searchText: ""))
 		.environmentObject(AddCoinsToPortfolioViewModel())
 		.environmentObject(PortfolioModelView())
 		.environmentObject(BaseViewModel())
-		.environmentObject(SearchViewModel(searchText: ""))
 		.environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
 }
 
@@ -121,12 +134,23 @@ extension Portfolio {
 				TextField("Search", text: $searchViewModel.searchText)
 					.textInputAutocapitalization(.never)
 					.autocorrectionDisabled(true)
+					.focused($isSearchFieldFocused)
 					
 			}
 			.padding(.horizontal)
 			
 		}
 		
+	}
+
+	private func hideKeyboardAndResetFocus() {
+		isSearchFieldFocused = false
+		UIApplication.shared.sendAction(
+			#selector(UIResponder.resignFirstResponder),
+			to: nil,
+			from: nil,
+			for: nil
+		)
 	}
 }
 

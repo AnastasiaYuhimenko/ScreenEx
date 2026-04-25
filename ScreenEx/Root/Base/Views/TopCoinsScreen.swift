@@ -6,10 +6,12 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct TopCoinsScreen: View {
 	@EnvironmentObject var viewModel: BaseViewModel
-	@EnvironmentObject var searchViewModel: SearchViewModel
+	@StateObject var searchViewModel: SearchViewModel
+	@FocusState private var isSearchFieldFocused: Bool
 	
 	var body: some View {
 		
@@ -43,6 +45,10 @@ struct TopCoinsScreen: View {
 					Text("Top")
 				)
 				.navigationBarTitleDisplayMode(.inline)
+				.onAppear {
+					hideKeyboardAndResetFocus()
+				}
+				
 			}
 		
 		}
@@ -50,9 +56,8 @@ struct TopCoinsScreen: View {
 }
 
 #Preview {
-	TopCoinsScreen()
+	TopCoinsScreen(searchViewModel: SearchViewModel(searchText: ""))
 		.environmentObject(BaseViewModel())
-		.environmentObject(SearchViewModel(searchText: ""))
 }
 
 extension TopCoinsScreen {
@@ -70,6 +75,7 @@ extension TopCoinsScreen {
 				TextField("Search", text: $searchViewModel.searchText)
 					.textInputAutocapitalization(.never)
 					.autocorrectionDisabled(true)
+					.focused($isSearchFieldFocused)
 				
 			}
 			.padding(.horizontal)
@@ -104,6 +110,7 @@ extension TopCoinsScreen {
 			.listSectionSeparator(.hidden, edges: .top)
 			.listSectionSeparator(.hidden, edges: .bottom)
 		}
+		.scrollDismissesKeyboard(.immediately)
 		
 		
 		.refreshable {
@@ -111,5 +118,23 @@ extension TopCoinsScreen {
 		}
 		.animation(.easeInOut, value: viewModel.exchangeCoins)
 		.scrollContentBackground(.hidden)
+	}
+}
+
+
+extension TopCoinsScreen {
+	
+	private func dismissKeyboard() {
+		UIApplication.shared.sendAction(
+			#selector(UIResponder.resignFirstResponder),
+			to: nil,
+			from: nil,
+			for: nil
+		)
+	}
+	
+	private func hideKeyboardAndResetFocus() {
+		isSearchFieldFocused = false
+		dismissKeyboard()
 	}
 }

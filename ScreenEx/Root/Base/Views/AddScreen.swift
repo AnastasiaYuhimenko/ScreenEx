@@ -14,10 +14,12 @@ struct AddScreen: View {
 	@State var searchQuery = ""
 	@State var showingCount: String = ""
 	@EnvironmentObject var viewModel: BaseViewModel
-	@EnvironmentObject var searchViewModel: SearchViewModel
+	@StateObject var searchViewModel: SearchViewModel
 	@EnvironmentObject private var coinManager: AddCoinsToPortfolioViewModel
 	
 	@State var count: String = ""
+	@FocusState private var isSearchFieldFocused: Bool
+	@FocusState private var isCountFieldFocused: Bool
 	
 	
 	@State var addCount: Double = 0.0
@@ -26,8 +28,11 @@ struct AddScreen: View {
 		NavigationStack {
 			ZStack {
 				Color.background
-				
 					.ignoresSafeArea()
+					.onTapGesture {
+						hideKeyboardAndResetFocus()
+					}
+
 				VStack {
 					CoinList
 					
@@ -43,15 +48,20 @@ struct AddScreen: View {
 			}
 			.navigationTitle("Add coin to portfolio")
 			.navigationBarTitleDisplayMode(.inline)
+			.onDisappear {
+				hideKeyboardAndResetFocus()
+			}
+			.onAppear {
+				hideKeyboardAndResetFocus()
+			}
 		}
     }
 }
 
 #Preview {
-	AddScreen()
+	AddScreen(searchViewModel: SearchViewModel(searchText: ""))
 		.environmentObject(AddCoinsToPortfolioViewModel())
 		.environmentObject(BaseViewModel())
-		.environmentObject(SearchViewModel(searchText: ""))
 		.environment(\.managedObjectContext, PersistenceController.shared.container.viewContext)
 }
 
@@ -82,6 +92,7 @@ extension AddScreen {
 										// TODO: добавить проверку на адекватность count
 										coinManager.addCoin(id: el.id ?? "error", count: addCount, context: managedObjectContext)
 										showingCount = ""
+										isCountFieldFocused = false
 									} else {
 										showingCount = el.id ?? ""
 										count = ""
@@ -98,6 +109,7 @@ extension AddScreen {
 					.animation(.spring)
 					TextField("0.0", text: $count)
 						.textFieldStyle(.roundedBorder)
+						.focused($isCountFieldFocused)
 						.frame(width: showingCount == el.id ? 90 : 0)
 						.opacity(showingCount == el.id ? 1 : 0)
 						.scaleEffect(showingCount == el.id ? 1 : 0.8, anchor: .trailing)
@@ -114,6 +126,7 @@ extension AddScreen {
 			
 		}
 		.scrollContentBackground(.hidden)
+		.scrollDismissesKeyboard(.immediately)
 	}
 }
 
@@ -133,6 +146,7 @@ extension AddScreen {
 					TextField("Search", text: $searchViewModel.searchText)
 						.textInputAutocapitalization(.never)
 						.autocorrectionDisabled(true)
+						.focused($isSearchFieldFocused)
 				}
 				.padding(.horizontal)
 				
@@ -150,8 +164,11 @@ extension AddScreen {
 			if abs(dx) > abs(dy) {
 				if dx > 0 {
 					dismissKeyboard()
+					// TODO: поспрашивать у людей выглядит ли это как баг и если да, то убрать
 					showingCount = ""
 					count = ""
+					
+					isCountFieldFocused = false
 				} else {
 					return
 				}
@@ -167,6 +184,12 @@ extension AddScreen {
 			from: nil,
 			for: nil
 		)
+	}
+
+	private func hideKeyboardAndResetFocus() {
+		isSearchFieldFocused = false
+		isCountFieldFocused = false
+		dismissKeyboard()
 	}
 	
 }

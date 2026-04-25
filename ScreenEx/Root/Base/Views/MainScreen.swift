@@ -20,13 +20,13 @@ struct MainScreen: View {
 	
 				VStack(spacing: 0) {
 					TabView(selection: $selectedTab) {
-						Portfolio()
+						Portfolio(searchViewModel: SearchViewModel(searchText: ""))
 							
 							.tag(0)
 							.tabItem {
 								Label("Portfolio", systemImage: "basket")
 							}
-						TopCoinsScreen()
+						TopCoinsScreen(searchViewModel: SearchViewModel(searchText: ""))
 						
 							.tag(1)
 							.tabItem {
