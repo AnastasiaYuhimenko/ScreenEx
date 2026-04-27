@@ -11,11 +11,9 @@ ScreenEx показывает топ криптовалют по капитал�
 <!-- Замените картинки на свои, положив их, например, в папку docs/screenshots/ -->
 
 | Top Coins | 
-| :---: | :---: |
 | <img width="358" height="694" alt="Снимок экрана 2026-04-27 в 12 28 39 PM" src="https://github.com/user-attachments/assets/25ef2377-cb61-4625-b958-d695e4045b2e" /> |
 | <img width="356" height="693" alt="Снимок экрана 2026-04-27 в 12 29 37 PM" src="https://github.com/user-attachments/assets/bbdd657b-262e-459f-902d-7d796ede070c" /> |
 | Portfolio (пустой) | Portfolio с монетами | Добавление монеты |
-| :---: | :---: | :---: |
 | <img width="351" height="734" alt="Снимок экрана 2026-04-27 в 12 32 04 PM" src="https://github.com/user-attachments/assets/bcbb35e0-0d85-4b44-aa9e-4172ced4ca36" /> | <img width="349" height="703" alt="Снимок экрана 2026-04-27 в 12 33 26 PM" src="https://github.com/user-attachments/assets/c377dbb4-5bb6-481e-938f-87abcba626e7" /> | <img width="361" height="714" alt="Снимок экрана 2026-04-27 в 12 33 54 PM" src="https://github.com/user-attachments/assets/20b750a6-c7b6-4de8-9178-670602f74206" /> |
 | <img width="380" height="730" alt="Снимок экрана 2026-04-27 в 12 31 30 PM" src="https://github.com/user-attachments/assets/074f5f2b-7a47-4c45-a3b4-38f7e9a66f81" /> | <img width="364" height="715" alt="Снимок экрана 2026-04-27 в 12 35 18 PM" src="https://github.com/user-attachments/assets/67606ecf-c75e-43cb-aba1-cf7f2e3a97c5" />
 | <img width="382" height="710" alt="Снимок экрана 2026-04-27 в 12 35 00 PM" src="https://github.com/user-attachments/assets/7e7131ec-a8ee-4dcd-a000-7e6e4666c0d9" />|
