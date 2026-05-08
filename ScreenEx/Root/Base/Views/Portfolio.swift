@@ -27,10 +27,26 @@ struct Portfolio: View {
 					.ignoresSafeArea()
 				
 				// MARK: - content
-				
-				if !viewModel.isLoading || !searchViewModel.isLoading {
-					portfolioCoinsList
-				} else {
+				if let urlError = viewModel.loadError as? URLError,
+				   urlError.code == .notConnectedToInternet {
+					ScrollView {
+						NoInternerScreen
+							.frame(maxWidth: .infinity)
+							.frame(minHeight: UIScreen.currentBounds.height * 0.7)
+						
+					}
+					.refreshable {
+						viewModel.refresh(coinsID: coinManager.CoinsID)
+					}					} else if viewModel.portfolioCoins.isEmpty && !viewModel.isLoading && !searchViewModel.isLoading {
+						NoCoins
+					} else if !viewModel.isLoading && !searchViewModel.isLoading {
+						portfolioCoinsList
+					} else  if let urlError = viewModel.loadError as? URLError,
+							   urlError.code == .notConnectedToInternet
+				{
+						NoInternerScreen
+				}
+				else {
 					Spacer()
 					ProgressView()
 					Spacer()
@@ -42,12 +58,21 @@ struct Portfolio: View {
 			.navigationBarTitleDisplayMode(.inline)
 			.safeAreaInset(edge: .top, spacing: 0) {
 				VStack(spacing: 0) {
-					customeSearchField
-						.padding(.horizontal)
-						.padding(.vertical, 8)
+					if !viewModel.portfolioCoins.isEmpty {
+						customeSearchField
+							.padding(.horizontal)
+							.padding(.vertical, 8)
+					}
 				}
 			}
 			
+		}
+		.onAppear {
+			coinManager.fetchCoinsFromCoreData(context: managedObjectContext)
+			viewModel.refresh(coinsID: coinManager.CoinsID)
+		}
+		.onChange(of: coinManager.CoinsID.map(\.0)) { _ in
+			viewModel.refresh(coinsID: coinManager.CoinsID)
 		}
 		//			.contentShape(Rectangle())
 		//			.onTapGesture {
@@ -160,16 +185,10 @@ extension Portfolio {
 				hideKeyboardAndResetFocus()
 			}
 		)
-		.onAppear {
-			coinManager.fetchCoinsFromCoreData(context: managedObjectContext)
-		}
 		.onDisappear {
 			hideKeyboardAndResetFocus()
 		}
 		.refreshable {
-			viewModel.refresh(coinsID: coinManager.CoinsID)
-		}
-		.onChange(of: coinManager.CoinsID.map(\.0)) { _  in
 			viewModel.refresh(coinsID: coinManager.CoinsID)
 		}
 		.scrollContentBackground(.hidden)
@@ -181,6 +200,47 @@ extension Portfolio {
 				} label: {
 					Image(systemName: "plus")
 				}
+			}
+		}
+	}
+}
+
+extension Portfolio {
+	var NoCoins: some View {
+		NavigationStack {
+			ZStack {
+				
+				Color.background
+					.ignoresSafeArea()
+				
+				VStack {
+					Spacer()
+					Text("You don’t have any coins yet")
+						.font(.title)
+						.fontWeight(.bold)
+						.multilineTextAlignment(.center)
+						.padding()
+					Text("Add your first coin to get started")
+						.font(.title3)
+						.frame(width: 300)
+						.multilineTextAlignment(.center)
+						.lineLimit(2, reservesSpace: true)
+						.padding(.bottom)
+					
+					
+					NavigationLink(destination: AddScreen(searchViewModel: SearchViewModel(searchText: ""))) {
+						ZStack {
+							RoundedRectangle(cornerRadius: 20)
+								.frame(width: 230, height: 50)
+							Text("Add your first coin")
+								.foregroundStyle(Color.white)
+								.fontWeight(.bold)
+						}
+					}
+					
+					Spacer()
+				}
+				.padding()
 			}
 		}
 	}

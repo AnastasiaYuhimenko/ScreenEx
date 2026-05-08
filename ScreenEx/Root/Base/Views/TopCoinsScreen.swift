@@ -25,20 +25,39 @@ struct TopCoinsScreen: View {
 				
 				// MARK: - content
 				VStack {
-					if viewModel.isLoading != true {
+					if let urlError = viewModel.loadError as? URLError,
+							   urlError.code == .notConnectedToInternet
+					{
+						ScrollView {
+							NoInternerScreen
+								.frame(maxWidth: .infinity)
+								.frame(minHeight: UIScreen.currentBounds.height * 0.7)
+								
+						}
+						.refreshable {
+							viewModel.refresh()
+						}
+					} else if viewModel.isLoading != true {
 						coinsList
-					} else {
+					}
+					else {
 						Spacer()
 						ProgressView()
 						Spacer()
 					}
 					
 				}
+				.animation(.easeInOut, value: viewModel.loadError is URLError)
+				.refreshable {
+					viewModel.refresh()
+				}
 				.safeAreaInset(edge: .top, spacing: 0) {
-					VStack(spacing: 0) {
-						customeSearchFiel
-							.padding(.horizontal)
-							.padding(.vertical, 8)
+					if !viewModel.exchangeCoins.isEmpty {
+						VStack(spacing: 0) {
+							customeSearchFiel
+								.padding(.horizontal)
+								.padding(.vertical, 8)
+						}
 					}
 				}
 				.navigationTitle(
@@ -113,9 +132,7 @@ extension TopCoinsScreen {
 		.scrollDismissesKeyboard(.immediately)
 		
 		
-		.refreshable {
-			viewModel.refresh()
-		}
+	
 		.animation(.easeInOut, value: viewModel.exchangeCoins)
 		.scrollContentBackground(.hidden)
 	}

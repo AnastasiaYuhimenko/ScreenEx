@@ -32,22 +32,35 @@ struct AddScreen: View {
 					.onTapGesture {
 						hideKeyboardAndResetFocus()
 					}
-
-				VStack {
+				if let urlError = viewModel.loadError as? URLError,
+					   urlError.code == .notConnectedToInternet {
+					ScrollView {
+						NoInternerScreen
+							.frame(maxWidth: .infinity)
+							.frame(minHeight: UIScreen.currentBounds.height * 0.7)
+							
+					}
+					.refreshable {
+						viewModel.refresh()
+					}
+				} else if viewModel.isLoading != true {
 					CoinList
-					
-				}
-				.safeAreaInset(edge: .top, spacing: 0) {
+				   }
+				   else {
+					   Spacer()
+					   ProgressView()
+					   Spacer()
+				   }
+				
+			}
+			.safeAreaInset(edge: .top, spacing: 0) {
+				if !viewModel.exchangeCoins.isEmpty {
 					VStack(spacing: 0) {
 						customeSearchFiel
 							.padding(.horizontal)
 							.padding(.vertical, 8)
 					}
 				}
-				.refreshable {
-					viewModel.refresh()
-				}
-				
 			}
 			.navigationTitle("Add coin to portfolio")
 			.navigationBarTitleDisplayMode(.inline)
@@ -128,6 +141,9 @@ extension AddScreen {
 			}
 			
 		}
+		.refreshable {
+			viewModel.refresh()
+		}
 		.scrollContentBackground(.hidden)
 		.scrollDismissesKeyboard(.immediately)
 	}
@@ -196,3 +212,6 @@ extension AddScreen {
 	}
 	
 }
+
+
+
